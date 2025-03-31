@@ -35,6 +35,11 @@ function App() {
 
     socket.on("startGame", ({ players }) => {
       setPlayers(players);
+
+      setPlayerPosition({
+        [players[0]]: 0,
+        [players[1]]: 0
+      });
     });
 
     socket.on("updateGame", ({ positions, diceRoll, currentTurn }) => {
