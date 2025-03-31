@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import "./Board.css";
 
-const boardSize = 10;
+const boardRowSize = 10;
 const cellSize = 50;
 const socket = io("http://localhost:4000");
 
@@ -10,26 +10,23 @@ const snakes = { 98: 78, 95: 56, 93: 73, 87: 36, 64: 60, 49: 11, 26: 10 };
 const ladders = { 2: 38, 7: 14, 8: 31, 21: 42, 28: 84, 51: 67, 71: 91 };
 
 const getPosition = (num) => {
-  const row = Math.floor((num - 1) / boardSize);
-  const col =
-    row % 2 === 0
-      ? (num - 1) % boardSize
-      : boardSize - 1 - ((num - 1) % boardSize);
+  const row = Math.floor((num - 1) / boardRowSize);
+  const col = row % 2 === 0 ? (num - 1) % boardRowSize : boardRowSize - 1 - ((num - 1) % boardRowSize);
   return {
     x: col * cellSize + cellSize / 2,
-    y: (boardSize - 1 - row) * cellSize + cellSize / 2,
+    y: (boardRowSize - 1 - row) * cellSize + cellSize / 2,
   };
 };
 
-const SnakeLadderBoard = () => {
+function App() {
   const [gameId, setGameId] = useState(null);
   const [playerId, setPlayerId] = useState(null);
   const [players, setPlayers] = useState([]);
-  const [positions, setPositions] = useState({});
-  const [diceRoll, setDiceRoll] = useState(null);
+  const [playerPosition, setPlayerPosition] = useState({});
+  const [diceValue, setDiceValue] = useState(null);
   const [currentTurn, setCurrentTurn] = useState(0);
   const [winner, setWinner] = useState(null);
-
+  
   useEffect(() => {
     socket.on("gameCreated", ({ gameId }) => {
       setGameId(gameId);
@@ -40,11 +37,11 @@ const SnakeLadderBoard = () => {
       setPlayers(players);
     });
 
-    socket.on("updateGame", ({ positions, diceRoll, currentTurn, winner }) => {
-      setPositions(positions);
-      setDiceRoll(diceRoll);
+    socket.on("updateGame", ({ positions, diceRoll, currentTurn }) => {
+      setPlayerPosition(positions);
+      setDiceValue(diceRoll);
       setCurrentTurn(currentTurn);
-      setWinner(winner);
+      // setWinner(winner);
     });
 
     return () => {
@@ -54,125 +51,95 @@ const SnakeLadderBoard = () => {
     };
   }, []);
 
-  const createGame = () => {
+  const handleCreateGame = () => {
     socket.emit("createGame");
-  };
+  }
 
-  const joinGame = () => {
-    const code = prompt("Enter Game Code:");
-    if (code) {
+  const handleJoinGame = () => {
+    const code = prompt("Enter the game code");
+    if(code) {
       socket.emit("joinGame", code);
       setGameId(code);
       setPlayerId(socket.id);
     }
-  };
+  }
 
-  const rollDice = () => {
-    if (gameId && players[currentTurn] === playerId && !winner) {
+  const rollDice = async () => {
+    if(gameId && players[currentTurn] === playerId && !winner) {
       socket.emit("rollDice", { gameId, player: playerId });
     }
-  };
+  }
 
   const renderBoard = () => {
-    let cells = [];
+    let boardCells = [];
     let toggle = true;
-    for (let row = boardSize; row > 0; row--) {
+
+    for(let row = boardRowSize; row > 0; row--) {
       let rowCells = [];
-      for (let col = 0; col < boardSize; col++) {
-        let num = toggle
-          ? row * boardSize - col
-          : (row - 1) * boardSize + col + 1;
+
+      for(let col = 0; col < boardRowSize; col++) {
+        let num = toggle ? row * boardRowSize - col : (row - 1) * boardRowSize + col + 1;
         rowCells.push(
-          <div
-            key={num}
-            className={`cell ${snakes[num] ? "snake" : ""} ${
-              ladders[num] ? "ladder" : ""
-            }`}
-          >
+          <div key={num} className={`cell ${snakes[num] ? "snake" : "" } ${ladders[num] ? "ladder" : ""}`}>
             {num}
-            {Object.keys(positions).map((player) =>
-              positions[player] === num ? (
+            {Object.keys(playerPosition).map((player) =>
+              playerPosition[player] === num ? (
                 <div key={player} className="player" />
               ) : null
             )}
           </div>
         );
       }
+
       toggle = !toggle;
-      cells.push(
+
+      boardCells.push(
         <div key={row} className="row">
           {rowCells}
         </div>
       );
-    }
-    return cells;
+    }   
+    return boardCells;
   };
 
   return (
-    <div>
-      {!gameId ? (
-        <div>
-          <button onClick={createGame}>Create Game</button>
-          <button onClick={joinGame}>Join Game</button>
-        </div>
-      ) : (
-        <div className="board-container">
-          <div className="board">{renderBoard()}</div>
-          <p>
-            Game Code: <strong>{gameId}</strong>
-          </p>
-          <svg
-            className="lines-container"
-            width={boardSize * cellSize}
-            height={boardSize * cellSize}
-            style={{ position: "absolute", top: 0, left: 0 }}
-          >
+    <>
+      {!gameId ? 
+        <>
+          <button onClick={handleCreateGame}>Create Gane</button>
+          <p>OR</p>
+          <button onClick={handleJoinGame}>Join Gane</button>
+        </>
+      :
+        <div style={{ position: 'relative', width: boardRowSize * cellSize, height: boardRowSize * cellSize }}>
+          <div className="board">
+            {renderBoard()}
+          </div>
+          <svg width={boardRowSize * cellSize} height={boardRowSize * cellSize} style={{ position: 'absolute', top: 0, left: 0 }}>
             {Object.entries(snakes).map(([start, end]) => {
-              const startPos = getPosition(parseInt(start));
-              const endPos = getPosition(end);
-              return (
-                <line
-                  key={start}
-                  x1={startPos.x}
-                  y1={startPos.y}
-                  x2={endPos.x}
-                  y2={endPos.y}
-                  stroke="red"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-              );
+              let startPos = getPosition(parseInt(start));
+              let endPos = getPosition(parseInt(end));
+              return <line key={start} x1={startPos.x} y1={startPos.y} x2={endPos.x} y2={endPos.y} stroke="red" strokeWidth="4" strokeLinecap="round"/>;
             })}
             {Object.entries(ladders).map(([start, end]) => {
-              const startPos = getPosition(parseInt(start));
-              const endPos = getPosition(end);
-              return (
-                <line
-                  key={start}
-                  x1={startPos.x}
-                  y1={startPos.y}
-                  x2={endPos.x}
-                  y2={endPos.y}
-                  stroke="green"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-              );
+              let startPos = getPosition(parseInt(start));
+              let endPos = getPosition(parseInt(end));
+              return <line key={start} x1={startPos.x} y1={startPos.y} x2={endPos.x} y2={endPos.y} stroke="green" strokeWidth="4" strokeLinecap="round"/>;
             })}
           </svg>
+          <p>Game Code: {gameId}</p>
           <button
-            className="roll-btn"
             onClick={rollDice}
-            disabled={players[currentTurn] !== playerId || winner}
+            disabled={players[currentTurn] !== playerId}
           >
             Roll Dice
           </button>
-          {diceRoll !== null && <p>Dice Roll: {diceRoll}</p>}
+          {diceValue !== null && <p>Dice Value: {diceValue} </p>}
           {winner && <p>Winner: {winner}</p>}
         </div>
-      )}
-    </div>
+      }
+    </>
   );
-};
+}
 
-export default SnakeLadderBoard;
+export default App;
