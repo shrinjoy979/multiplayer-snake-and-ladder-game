@@ -87,9 +87,14 @@ function App() {
         rowCells.push(
           <div key={num} className={`cell ${snakes[num] ? "snake" : "" } ${ladders[num] ? "ladder" : ""}`}>
             {num}
-            {Object.keys(playerPosition).map((player) =>
+            {Object.keys(playerPosition).map((player, index) =>
               playerPosition[player] === num ? (
-                <div key={player} className="player" />
+                <div 
+                  key={player} 
+                  className={`player player-${index}`}
+                >
+                  {index === 0 ? "🔴" : "🟢"}
+                </div>
               ) : null
             )}
           </div>
