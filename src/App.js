@@ -46,13 +46,17 @@ function App() {
       setPlayerPosition(positions);
       setDiceValue(diceRoll);
       setCurrentTurn(currentTurn);
-      // setWinner(winner);
+    });
+
+    socket.on("gameOver", ({ winner }) => {
+      setWinner(winner);
     });
 
     return () => {
       socket.off("gameCreated");
       socket.off("startGame");
       socket.off("updateGame");
+      socket.off("gameOver");
     };
   }, []);
 
