@@ -1,158 +1,114 @@
-import React, { useEffect, useState } from "react";
-import { io } from "socket.io-client";
-import "./Board.css";
-
-const boardRowSize = 10;
-const cellSize = 50;
-const socket = io("http://localhost:4000");
-
-const snakes = { 98: 78, 95: 56, 93: 73, 87: 36, 64: 60, 49: 11, 26: 10 };
-const ladders = { 2: 38, 7: 14, 8: 31, 21: 42, 28: 84, 51: 67, 71: 91 };
-
-const getPosition = (num) => {
-  const row = Math.floor((num - 1) / boardRowSize);
-  const col = row % 2 === 0 ? (num - 1) % boardRowSize : boardRowSize - 1 - ((num - 1) % boardRowSize);
-  return {
-    x: col * cellSize + cellSize / 2,
-    y: (boardRowSize - 1 - row) * cellSize + cellSize / 2,
-  };
-};
+import React from 'react';
+import "./css/Landing.css";
+import { Dice5, IndianRupee, Coins, Users, Shield, ArrowRight } from 'lucide-react';
 
 function App() {
-  const [gameId, setGameId] = useState(null);
-  const [playerId, setPlayerId] = useState(null);
-  const [players, setPlayers] = useState([]);
-  const [playerPosition, setPlayerPosition] = useState({});
-  const [diceValue, setDiceValue] = useState(null);
-  const [currentTurn, setCurrentTurn] = useState(0);
-  const [winner, setWinner] = useState(null);
-  
-  useEffect(() => {
-    socket.on("gameCreated", ({ gameId }) => {
-      setGameId(gameId);
-      setPlayerId(socket.id);
-    });
-
-    socket.on("startGame", ({ players }) => {
-      setPlayers(players);
-
-      setPlayerPosition({
-        [players[0]]: 0,
-        [players[1]]: 0
-      });
-    });
-
-    socket.on("updateGame", ({ positions, diceRoll, currentTurn }) => {
-      setPlayerPosition(positions);
-      setDiceValue(diceRoll);
-      setCurrentTurn(currentTurn);
-    });
-
-    socket.on("gameOver", ({ winner }) => {
-      setWinner(winner);
-    });
-
-    return () => {
-      socket.off("gameCreated");
-      socket.off("startGame");
-      socket.off("updateGame");
-      socket.off("gameOver");
-    };
-  }, []);
-
-  const handleCreateGame = () => {
-    socket.emit("createGame");
-  }
-
-  const handleJoinGame = () => {
-    const code = prompt("Enter the game code");
-    if(code) {
-      socket.emit("joinGame", code);
-      setGameId(code);
-      setPlayerId(socket.id);
-    }
-  }
-
-  const rollDice = async () => {
-    if(gameId && players[currentTurn] === playerId && !winner) {
-      socket.emit("rollDice", { gameId, player: playerId });
-    }
-  }
-
-  const renderBoard = () => {
-    let boardCells = [];
-    let toggle = true;
-
-    for(let row = boardRowSize; row > 0; row--) {
-      let rowCells = [];
-
-      for(let col = 0; col < boardRowSize; col++) {
-        let num = toggle ? row * boardRowSize - col : (row - 1) * boardRowSize + col + 1;
-        rowCells.push(
-          <div key={num} className={`cell ${snakes[num] ? "snake" : "" } ${ladders[num] ? "ladder" : ""}`}>
-            {num}
-            {Object.keys(playerPosition).map((player, index) =>
-              playerPosition[player] === num ? (
-                <div 
-                  key={player} 
-                  className={`player player-${index}`}
-                >
-                  {index === 0 ? "🔴" : "🟢"}
-                </div>
-              ) : null
-            )}
-          </div>
-        );
-      }
-
-      toggle = !toggle;
-
-      boardCells.push(
-        <div key={row} className="row">
-          {rowCells}
-        </div>
-      );
-    }   
-    return boardCells;
-  };
-
   return (
-    <>
-      {!gameId ? 
-        <>
-          <button onClick={handleCreateGame}>Create Gane</button>
-          <p>OR</p>
-          <button onClick={handleJoinGame}>Join Gane</button>
-        </>
-      :
-        <div style={{ position: 'relative', width: boardRowSize * cellSize, height: boardRowSize * cellSize }}>
-          <div className="board">
-            {renderBoard()}
+    <div className="min-vh-100">
+      <header className="container py-5">
+        <nav className="d-flex justify-content-between align-items-center mb-5">
+          <div className="d-flex align-items-center gap-2">
+            <Dice5 className="text-yellow" size={32} />
+            <span className="fs-4 fw-bold text-white">SnakesWin</span>
           </div>
-          <svg width={boardRowSize * cellSize} height={boardRowSize * cellSize} style={{ position: 'absolute', top: 0, left: 0 }}>
-            {Object.entries(snakes).map(([start, end]) => {
-              let startPos = getPosition(parseInt(start));
-              let endPos = getPosition(parseInt(end));
-              return <line key={start} x1={startPos.x} y1={startPos.y} x2={endPos.x} y2={endPos.y} stroke="red" strokeWidth="4" strokeLinecap="round"/>;
-            })}
-            {Object.entries(ladders).map(([start, end]) => {
-              let startPos = getPosition(parseInt(start));
-              let endPos = getPosition(parseInt(end));
-              return <line key={start} x1={startPos.x} y1={startPos.y} x2={endPos.x} y2={endPos.y} stroke="green" strokeWidth="4" strokeLinecap="round"/>;
-            })}
-          </svg>
-          <p>Game Code: {gameId}</p>
-          <button
-            onClick={rollDice}
-            disabled={players[currentTurn] !== playerId}
-          >
-            Roll Dice
-          </button>
-          {diceValue !== null && <p>Dice Value: {diceValue} </p>}
-          {winner && <p>Winner: {winner}</p>}
+          <div className="d-flex gap-3">
+            <button className="btn text-white">Login</button>
+            <button className="btn btn-yellow">Play Now</button>
+          </div>
+        </nav>
+
+        <div className="row align-items-center gy-4">
+          <div className="col-md-6 text-center text-md-start">
+            <h1 className="display-4 fw-bold text-white mb-4">
+              Play Snakes & Ladders
+              <span className="d-block text-yellow">Win Real Money!</span>
+            </h1>
+            <p className="lead text-white-50 mb-4">
+              Experience the classic game with a modern twist. Compete with players worldwide and win big with INR or Solana.
+            </p>
+            <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-md-start">
+              <button className="btn btn-yellow btn-lg d-flex align-items-center justify-content-center gap-2">
+                Start Playing <ArrowRight size={20} />
+              </button>
+              <a href='#learnMore'> <button className="btn btn-outline-light btn-lg">Learn More</button></a>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <img 
+              src="https://images.unsplash.com/photo-1611996575749-79a3a250f948?auto=format&fit=crop&q=80&w=600"
+              alt="Dice Game"
+              className="img-fluid rounded-4 shadow"
+            />
+          </div>
         </div>
-      }
-    </>
+      </header>
+
+      <section className="py-5 bg-purple-dark" id="learnMore">
+        <div className="container">
+          <h2 className="text-center text-white mb-5">Why Choose SnakesWin?</h2>
+          <div className="row g-4">
+            <div className="col-md-4">
+              <FeatureCard 
+                icon={<IndianRupee size={32} />}
+                title="INR Support"
+                description="Play with Indian Rupees. Easy deposits and instant withdrawals."
+              />
+            </div>
+            <div className="col-md-4">
+              <FeatureCard 
+                icon={<Coins size={32} />}
+                title="Solana Integration"
+                description="Use Solana for lightning-fast crypto transactions."
+              />
+            </div>
+            <div className="col-md-4">
+              <FeatureCard 
+                icon={<Users size={32} />}
+                title="Multiplayer"
+                description="Compete with players from around the world in real-time."
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-5 bg-purple-dark">
+        <div className="container text-center">
+          <div className="d-flex align-items-center justify-content-center gap-2 mb-4">
+            <Shield className="text-yellow" size={32} />
+            <h2 className="mb-0 text-white">Secure Gaming</h2>
+          </div>
+          <p className="text-white-50 mx-auto" style={{ maxWidth: '600px' }}>
+            Your security is our priority. All transactions are encrypted and protected. 
+            We are licensed and regulated to ensure fair play.
+          </p>
+        </div>
+      </section>
+
+      <footer className="py-4 footer">
+        <div className="container">
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center gap-2">
+              <Dice5 className="text-yellow" size={24} />
+              <span className="text-white">SnakesWin</span>
+            </div>
+            <p className="text-white-50 mb-0 small">
+              © 2024 SnakesWin. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+function FeatureCard({ icon, title, description }) {
+  return (
+    <div className="feature-card h-100 p-4 rounded-4 text-center">
+      <div className="text-yellow mb-3">{icon}</div>
+      <h3 className="fs-5 fw-semibold text-white mb-2">{title}</h3>
+      <p className="text-white-50 mb-0">{description}</p>
+    </div>
   );
 }
 
