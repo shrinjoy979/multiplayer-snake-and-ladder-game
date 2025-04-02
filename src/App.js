@@ -1,8 +1,11 @@
 import React from 'react';
 import "./css/Landing.css";
 import { Dice5, IndianRupee, Coins, Users, Shield, ArrowRight } from 'lucide-react';
+import { SignInButton, SignOutButton, useUser } from '@clerk/clerk-react';
 
 function App() {
+  const { isSignedIn, user } = useUser();
+
   return (
     <div className="min-vh-100">
       <header className="container py-5">
@@ -12,7 +15,14 @@ function App() {
             <span className="fs-4 fw-bold text-white">SnakesWin</span>
           </div>
           <div className="d-flex gap-3">
-            <button className="btn text-white">Login</button>
+          {isSignedIn ? (
+              <>
+                <span className="text-white d-flex align-items-center">Welcome, {user.fullName}</span>
+                <SignOutButton className="btn text-white" />
+              </>
+            ) : (
+              <SignInButton className="btn text-white" mode="modal">Login</SignInButton>
+            )}
             <button className="btn btn-yellow">Play Now</button>
           </div>
         </nav>
