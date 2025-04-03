@@ -1,10 +1,30 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import "./css/Landing.css";
 import { Dice5, IndianRupee, Coins, Users, Shield, ArrowRight } from 'lucide-react';
 import { SignInButton, SignOutButton, useUser } from '@clerk/clerk-react';
+import axios from "axios";
 
 function App() {
   const { isSignedIn, user } = useUser();
+  console.log('user', user);
+
+  useEffect(() => {
+    if (user) {
+      axios
+        .post("http://localhost:4000/api/save-user", {
+          id: user?.id,
+          name: user?.fullName,
+          email: user?.primaryEmailAddress?.emailAddress,
+          profileImage: 'testing',
+        })
+        .then((response) => {
+          console.log("User saved successfully:", response.data);
+        })
+        .catch((error) => {
+          console.error("Error saving user:", error.response?.data || error.message);
+        });
+    }
+  }, [user]);
 
   return (
     <div className="min-vh-100">
