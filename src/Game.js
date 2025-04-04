@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import "./css/Board.css";
+import { TowerControl as GameController, Users } from 'lucide-react';
 
 const boardRowSize = 10;
 const cellSize = 50;
@@ -121,9 +122,45 @@ function Game() {
     <>
       {!gameId ? 
         <>
-          <button onClick={handleCreateGame}>Create Gane</button>
-          <p>OR</p>
-          <button onClick={handleJoinGame}>Join Gane</button>
+          <div className="container min-vh-100 d-flex align-items-center justify-content-center py-4">
+            <div className="glass-card rounded-4 p-5 shadow-lg" style={{ maxWidth: '450px' }}>
+              <h1 className="display-6 fw-bold text-center text-white mb-4">
+                SnakesWin
+              </h1>
+              
+              <div className="d-flex flex-column gap-4">
+                <button
+                  onClick={handleCreateGame}
+                  className="btn btn-custom-purple btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
+                >
+                  <span className="icon-container">
+                    <GameController size={24} />
+                  </span>
+                  <span>Create Game</span>
+                </button>
+
+                <div className="d-flex align-items-center gap-3">
+                  <hr className="flex-grow-1 opacity-25" />
+                  <span className="text-white-50">OR</span>
+                  <hr className="flex-grow-1 opacity-25" />
+                </div>
+
+                <button
+                  onClick={handleJoinGame}
+                  className="btn btn-custom-indigo btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
+                >
+                  <span className="icon-container">
+                    <Users size={24} />
+                  </span>
+                  <span>Join Game</span>
+                </button>
+              </div>
+
+              <p className="text-white-50 text-center small mt-4 mb-0">
+                Connect with friends and start playing!
+              </p>
+            </div>
+          </div>
         </>
       :
         <div style={{ position: 'relative', width: boardRowSize * cellSize, height: boardRowSize * cellSize }}>
