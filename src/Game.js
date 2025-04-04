@@ -4,7 +4,8 @@ import "./css/Board.css";
 
 const boardRowSize = 10;
 const cellSize = 50;
-const socket = io("http://localhost:4000");
+const serverURL = process.env.REACT_APP_ENVIRONMENT === 'LOCAL' ? process.env.REACT_APP_LOCAL_SERVER_URL : process.env.REACT_APP_SERVER_URL;
+const socket = io(serverURL);
 
 const snakes = { 98: 78, 95: 56, 93: 73, 87: 36, 64: 60, 49: 11, 26: 10 };
 const ladders = { 2: 38, 7: 14, 8: 31, 21: 42, 28: 84, 51: 67, 71: 91 };

@@ -8,11 +8,12 @@ import axios from "axios";
 function LandingPage() {
   const { isSignedIn, user } = useUser();
   const navigate = useNavigate();
+  const serverURL = process.env.REACT_APP_ENVIRONMENT === 'LOCAL' ? process.env.REACT_APP_LOCAL_SERVER_URL : process.env.REACT_APP_SERVER_URL;
 
   useEffect(() => {
     if (user) {
       axios
-        .post("http://localhost:4000/api/save-user", {
+        .post(`${serverURL}/api/save-user`, {
           id: user?.id,
           name: user?.fullName,
           email: user?.primaryEmailAddress?.emailAddress,
@@ -25,7 +26,7 @@ function LandingPage() {
           console.error("Error saving user:", error.response?.data || error.message);
         });
     }
-  }, [user]);
+  }, [user, serverURL]);
 
   return (
 
