@@ -1,3 +1,53 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+body {
+  background: linear-gradient(180deg, #4c1d95 0%, #4338ca 100%);
+  min-height: 100vh;
+  color: white;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-custom-purple {
+  background-color: #7c3aed;
+  border-color: #7c3aed;
+  transition: all 0.3s ease;
+}
+
+.btn-custom-purple:hover {
+  background-color: #6d28d9;
+  border-color: #6d28d9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.btn-custom-indigo {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+  transition: all 0.3s ease;
+}
+
+.btn-custom-indigo:hover {
+  background-color: #4338ca;
+  border-color: #4338ca;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.icon-container {
+  transition: transform 0.3s ease;
+}
+
+.btn:hover .icon-container {
+  transform: scale(1.1);
+}
+
+/*****************************/
+
 .board {
   border: 2px solid black;
 }
