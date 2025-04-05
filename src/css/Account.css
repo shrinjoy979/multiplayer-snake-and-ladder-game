@@ -13,42 +13,35 @@ body {
   border-radius: 1rem;
 }
 
-.currency-btn {
+.bet-amount-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
   transition: all 0.3s ease;
+  min-width: 90px;
 }
 
-.currency-btn:hover {
+.bet-amount-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
 }
 
-.currency-btn.active {
+.bet-amount-btn.active {
   background: linear-gradient(90deg, #a855f7 0%, #6366f1 100%);
   border: none;
-}
-
-.bet-input {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  color: white !important;
-}
-
-.bet-input::placeholder {
-  color: rgba(255, 255, 255, 0.5) !important;
-}
-
-.bet-input:focus {
-  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1) !important;
 }
 
 .wallet-btn {
   background: linear-gradient(90deg, #8b5cf6 0%, #6366f1 100%);
   border: none;
   transition: all 0.3s ease;
+  color: white;
 }
 
 .wallet-btn:hover {
   transform: translateY(-2px);
   opacity: 0.9;
+  color: white;
 }
 
 .wallet-btn.connected {
@@ -59,11 +52,13 @@ body {
   background: linear-gradient(90deg, #a855f7 0%, #6366f1 100%);
   border: none;
   transition: all 0.3s ease;
+  color: white;
 }
 
 .place-bet-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   opacity: 0.9;
+  color: white;
 }
 
 .place-bet-btn:disabled {

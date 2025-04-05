@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./css/Landing.css";
-import { Dice5, IndianRupee, Coins, Users, Shield, ArrowRight } from 'lucide-react';
+import { Dice5, Coins, Users, Shield, ArrowRight } from 'lucide-react';
 import { SignInButton, SignOutButton, useUser } from '@clerk/clerk-react';
 import axios from "axios";
 
@@ -59,10 +59,10 @@ function LandingPage() {
           <div className="col-md-6 text-center text-md-start">
             <h1 className="display-4 fw-bold text-white mb-4">
               Play Snakes & Ladders
-              <span className="d-block text-yellow">Win Real Money!</span>
+              <span className="d-block text-yellow">Win SOLANA!</span>
             </h1>
             <p className="lead text-white-50 mb-4">
-              Experience the classic game with a modern twist. Compete with players worldwide and win big with INR or Solana.
+              Experience the classic game with a modern twist. Compete with players worldwide and win big with Solana.
             </p>
             <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-md-start">
               <button className="btn btn-yellow btn-lg d-flex align-items-center justify-content-center gap-2">
@@ -85,21 +85,21 @@ function LandingPage() {
         <div className="container">
           <h2 className="text-center text-white mb-5">Why Choose SnakesWin?</h2>
           <div className="row g-4">
-            <div className="col-md-4">
+            {/* <div className="col-md-4">
               <FeatureCard 
                 icon={<IndianRupee size={32} />}
                 title="INR Support"
                 description="Play with Indian Rupees. Easy deposits and instant withdrawals."
               />
-            </div>
-            <div className="col-md-4">
+            </div> */}
+            <div className="col-md-6">
               <FeatureCard 
                 icon={<Coins size={32} />}
                 title="Solana Integration"
                 description="Use Solana for lightning-fast crypto transactions."
               />
             </div>
-            <div className="col-md-4">
+            <div className="col-md-6">
               <FeatureCard 
                 icon={<Users size={32} />}
                 title="Multiplayer"

@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { Coins, IndianRupee, RefreshCcw } from 'lucide-react';
-import './css/Account.css'
+import { Coins, RefreshCcw } from 'lucide-react';
+import "./css/Account.css";
 
-function App() {
+function Account() {
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState('INR');
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState(null);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
 
+  const betAmounts = [0.1, 0.25, 0.5, 1, 2, 3, 4, 5];
+
   const handleBet = () => {
     if (!amount || parseFloat(amount) <= 0) return;
-    if (currency === 'SOL' && !isWalletConnected) return;
+    if (!isWalletConnected) return;
     
     setIsSpinning(true);
     setResult(null);
@@ -24,66 +25,40 @@ function App() {
     }, 2000);
   };
 
-  const getSymbol = (curr) => curr === 'INR' ? '₹' : 'SOL';
-
   return (
     <div className="container min-vh-100 d-flex align-items-center justify-content-center py-4">
       <div className="betting-card p-4 p-md-5" style={{ maxWidth: '32rem' }}>
         <h1 className="text-center mb-4 fw-bold">Double or Nothing</h1>
         
         <div className="d-flex flex-column gap-4">
-          {/* Currency Selection */}
-          <div className="d-flex justify-content-center gap-3">
+          {/* Wallet Connection (Dummy) */}
+          <div className="d-flex justify-content-center">
             <button
-              onClick={() => setCurrency('INR')}
-              className={`btn currency-btn d-flex align-items-center gap-2 px-4 py-2 ${
-                currency === 'INR' ? 'active' : 'btn-outline-light'
-              }`}
+              onClick={() => setIsWalletConnected(!isWalletConnected)}
+              className={`btn wallet-btn px-4 py-2 ${isWalletConnected ? 'connected' : ''}`}
             >
-              <IndianRupee size={20} />
-              INR
-            </button>
-            <button
-              onClick={() => setCurrency('SOL')}
-              className={`btn currency-btn d-flex align-items-center gap-2 px-4 py-2 ${
-                currency === 'SOL' ? 'active' : 'btn-outline-light'
-              }`}
-            >
-              <Coins size={20} />
-              SOL
+              <Coins className="me-2" size={20} />
+              {isWalletConnected ? 'Wallet Connected' : 'Connect Wallet'}
             </button>
           </div>
 
-          {/* Wallet Connection (Dummy) */}
-          {currency === 'SOL' && (
-            <div className="d-flex justify-content-center">
+          {/* Bet Amount Buttons */}
+          <div className="d-flex flex-wrap gap-2 justify-content-center">
+            {betAmounts.map((betAmount) => (
               <button
-                onClick={() => setIsWalletConnected(!isWalletConnected)}
-                className={`btn wallet-btn px-4 py-2 ${isWalletConnected ? 'connected' : ''}`}
+                key={betAmount}
+                onClick={() => setAmount(betAmount.toString())}
+                className={`btn bet-amount-btn ${amount === betAmount.toString() ? 'active' : ''}`}
               >
-                {isWalletConnected ? 'Wallet Connected' : 'Connect Wallet'}
+                {betAmount} SOL
               </button>
-            </div>
-          )}
-
-          {/* Amount Input */}
-          <div className="position-relative">
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder={`Enter amount in ${currency}`}
-              className="form-control bet-input"
-            />
-            <span className="position-absolute end-0 top-50 translate-middle-y pe-3 text-white-50">
-              {getSymbol(currency)}
-            </span>
+            ))}
           </div>
 
           {/* Bet Button */}
           <button
             onClick={handleBet}
-            disabled={isSpinning || !amount || parseFloat(amount) <= 0 || (currency === 'SOL' && !isWalletConnected)}
+            disabled={isSpinning || !amount || parseFloat(amount) <= 0 || !isWalletConnected}
             className="btn place-bet-btn d-flex align-items-center justify-content-center gap-2 py-3"
           >
             {isSpinning ? (
@@ -92,7 +67,7 @@ function App() {
                 Betting...
               </>
             ) : (
-              currency === 'SOL' && !isWalletConnected ? 'Connect Wallet to Bet' : 'Place Bet'
+              !isWalletConnected ? 'Connect Wallet to Bet' : 'Place Bet'
             )}
           </button>
 
@@ -102,12 +77,12 @@ function App() {
               {result === 'win' ? (
                 <>
                   <p className="fs-5 fw-bold mb-2 text-center">Congratulations! 🎉</p>
-                  <p className="mb-0 text-center">You won {getSymbol(currency)}{(parseFloat(amount) * 2).toFixed(2)}!</p>
+                  <p className="mb-0 text-center">You won {(parseFloat(amount) * 2).toFixed(2)} SOL!</p>
                 </>
               ) : (
                 <>
                   <p className="fs-5 fw-bold mb-2 text-center">Better luck next time! 😔</p>
-                  <p className="mb-0 text-center">You lost {getSymbol(currency)}{amount}</p>
+                  <p className="mb-0 text-center">You lost {amount} SOL</p>
                 </>
               )}
             </div>
@@ -122,4 +97,4 @@ function App() {
   );
 }
 
-export default App;
+export default Account;
