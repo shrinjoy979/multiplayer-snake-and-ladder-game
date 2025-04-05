@@ -29,12 +29,6 @@ function LandingPage() {
   }, [user, serverURL]);
 
   return (
-
-    // <Routes>
-    //   <Route path="/" element={<LandingPage />} />
-    //   <Route path="/game" element={<Game />} />
-    // </Routes>
-
     <div className="min-vh-100">
       <header className="container py-5">
         <nav className="d-flex justify-content-between align-items-center mb-5">
@@ -47,11 +41,14 @@ function LandingPage() {
               <>
                 <span className="text-white d-flex align-items-center">Welcome, {user.fullName}</span>
                 <SignOutButton className="btn text-white" />
+                <button className="btn btn-yellow" onClick={() => navigate('/game')}>Play Now</button>
               </>
             ) : (
-              <SignInButton className="btn text-white" mode="modal">Login</SignInButton>
+              <>
+                <SignInButton className="btn text-white" mode="modal">Login</SignInButton>
+                <SignInButton className="btn btn-yellow" mode="modal">Play Now</SignInButton>
+              </>
             )}
-            <button className="btn btn-yellow" onClick={() => navigate('/game')}>Play Now</button>
           </div>
         </nav>
 
@@ -65,9 +62,15 @@ function LandingPage() {
               Experience the classic game with a modern twist. Compete with players worldwide and win big with Solana.
             </p>
             <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-md-start">
-              <button className="btn btn-yellow btn-lg d-flex align-items-center justify-content-center gap-2">
-                Start Playing <ArrowRight size={20} />
-              </button>
+              {isSignedIn ?
+                <button className="btn btn-yellow btn-lg d-flex align-items-center justify-content-center gap-2" onClick={() => navigate('/game')}>
+                  Start Playing <ArrowRight size={20} />
+                </button>
+              :
+                <SignInButton className="btn btn-yellow btn-lg d-flex align-items-center justify-content-center gap-2" mode="modal">
+                  Start Playing
+                </SignInButton>
+              }
               <a href='#learnMore'> <button className="btn btn-outline-light btn-lg">Learn More</button></a>
             </div>
           </div>
@@ -85,13 +88,6 @@ function LandingPage() {
         <div className="container">
           <h2 className="text-center text-white mb-5">Why Choose SnakesWin?</h2>
           <div className="row g-4">
-            {/* <div className="col-md-4">
-              <FeatureCard 
-                icon={<IndianRupee size={32} />}
-                title="INR Support"
-                description="Play with Indian Rupees. Easy deposits and instant withdrawals."
-              />
-            </div> */}
             <div className="col-md-6">
               <FeatureCard 
                 icon={<Coins size={32} />}
