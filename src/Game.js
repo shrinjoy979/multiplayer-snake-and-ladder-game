@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import "./css/Board.css";
-import { TowerControl as GameController, Users } from 'lucide-react';
+import { TowerControl as GameController, Users, Dice5, Trophy } from 'lucide-react';
 
 const boardRowSize = 10;
 const cellSize = 50;
@@ -131,7 +131,7 @@ function Game() {
               <div className="d-flex flex-column gap-4">
                 <button
                   onClick={handleCreateGame}
-                  className="btn btn-custom-purple btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
+                  className="btn btn-custom-purple btn-lg w-100 d-flex align-items-center justify-content-center gap-2 text-light"
                 >
                   <span className="icon-container">
                     <GameController size={24} />
@@ -147,7 +147,7 @@ function Game() {
 
                 <button
                   onClick={handleJoinGame}
-                  className="btn btn-custom-indigo btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
+                  className="btn btn-custom-indigo btn-lg w-100 d-flex align-items-center justify-content-center gap-2 text-light"
                 >
                   <span className="icon-container">
                     <Users size={24} />
@@ -163,31 +163,98 @@ function Game() {
           </div>
         </>
       :
-        <div style={{ position: 'relative', width: boardRowSize * cellSize, height: boardRowSize * cellSize }}>
-          <div className="board">
-            {renderBoard()}
+        <div className="game-container">
+          <div className="game-board-wrapper">
+            <div style={{ position: 'relative', width: boardRowSize * cellSize, height: boardRowSize * cellSize }}>
+              <div className="board">
+                {renderBoard()}
+              </div>
+              <svg width={boardRowSize * cellSize} height={boardRowSize * cellSize} style={{ position: 'absolute', top: 0, left: 0 }} className="game-paths">
+                {Object.entries(snakes).map(([start, end]) => {
+                  let startPos = getPosition(parseInt(start));
+                  let endPos = getPosition(parseInt(end));
+                  return <g key={start}>
+                    <line 
+                      x1={startPos.x} 
+                      y1={startPos.y} 
+                      x2={endPos.x} 
+                      y2={endPos.y} 
+                      className="snake-path"
+                    />
+                    <circle 
+                      cx={startPos.x} 
+                      cy={startPos.y} 
+                      r="4" 
+                      className="snake-head" 
+                    />
+                    <circle 
+                      cx={endPos.x} 
+                      cy={endPos.y} 
+                      r="4" 
+                      className="snake-tail" 
+                    />
+                  </g>;
+                })}
+                {Object.entries(ladders).map(([start, end]) => {
+                  let startPos = getPosition(parseInt(start));
+                  let endPos = getPosition(parseInt(end));
+                  return <g key={start}>
+                    <line 
+                      x1={startPos.x} 
+                      y1={startPos.y} 
+                      x2={endPos.x} 
+                      y2={endPos.y} 
+                      className="ladder-path"
+                    />
+                    <circle 
+                      cx={startPos.x} 
+                      cy={startPos.y} 
+                      r="4" 
+                      className="ladder-start" 
+                    />
+                    <circle 
+                      cx={endPos.x} 
+                      cy={endPos.y} 
+                      r="4" 
+                      className="ladder-end" 
+                    />
+                  </g>;
+                })}
+              </svg>
+            </div>
+
+            <div className="game-info">
+              <div className="game-code">
+                <span className="label">Game Code:</span>
+                <span className="value">{gameId}</span>
+              </div>
+
+              {winner ? (
+                <div className="winner-announcement">
+                  <Trophy className="trophy-icon" size={32} />
+                  <span>Player {winner} Wins!</span>
+                </div>
+              ) : (
+                <div className="game-controls">
+                  <button
+                    className={`roll-button ${players[currentTurn] !== playerId ? 'disabled' : ''}`}
+                    onClick={rollDice}
+                    disabled={players[currentTurn] !== playerId}
+                  >
+                    <Dice5 size={24} />
+                    <span>Roll Dice</span>
+                  </button>
+                  
+                  {diceValue !== null && (
+                    <div className="dice-value">
+                      <span className="label">Dice Roll:</span>
+                      <span className="value">{diceValue}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-          <svg width={boardRowSize * cellSize} height={boardRowSize * cellSize} style={{ position: 'absolute', top: 0, left: 0 }}>
-            {Object.entries(snakes).map(([start, end]) => {
-              let startPos = getPosition(parseInt(start));
-              let endPos = getPosition(parseInt(end));
-              return <line key={start} x1={startPos.x} y1={startPos.y} x2={endPos.x} y2={endPos.y} stroke="red" strokeWidth="4" strokeLinecap="round"/>;
-            })}
-            {Object.entries(ladders).map(([start, end]) => {
-              let startPos = getPosition(parseInt(start));
-              let endPos = getPosition(parseInt(end));
-              return <line key={start} x1={startPos.x} y1={startPos.y} x2={endPos.x} y2={endPos.y} stroke="green" strokeWidth="4" strokeLinecap="round"/>;
-            })}
-          </svg>
-          <p>Game Code: {gameId}</p>
-          <button
-            onClick={rollDice}
-            disabled={players[currentTurn] !== playerId}
-          >
-            Roll Dice
-          </button>
-          {diceValue !== null && <p>Dice Value: {diceValue} </p>}
-          {winner && <p>Winner: {winner}</p>}
         </div>
       }
     </>
