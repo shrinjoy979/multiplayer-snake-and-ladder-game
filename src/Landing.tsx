@@ -19,10 +19,10 @@ function LandingPage() {
           email: user?.primaryEmailAddress?.emailAddress,
           profileImage: 'testing',
         })
-        .then((response) => {
+        .then((response: any) => {
           console.log("User saved successfully:", response.data);
         })
-        .catch((error) => {
+        .catch((error: any) => {
           console.error("Error saving user:", error.response?.data || error.message);
         });
     }
